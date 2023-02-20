@@ -1,0 +1,19 @@
+{
+  "name": "redis_fundamentals",
+  "version": "1.0.0",
+  "description": "Basics of Redis with NodeJs ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "manas-04",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-validator": "^6.15.0",
+    "node-fetch": "^3.3.0",
+    "redis": "^2.8.0"
+  }
+}
