@@ -2,9 +2,11 @@ require("dotenv").config();
 
 const cors = require('cors');
 const express = require('express');
+
 const setRouter = require("./routers/setRouters");
 const getRouter = require("./routers/getRouters");
 const client = require("./utils/redisDbConfig");
+const findRouter = require("./routers/findRouter");
 
 const app = express();
 
@@ -13,6 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(getRouter);
 app.use(setRouter);
+app.use(findRouter);
 
 //Redis monitoring functions
 client.on('connect', function() {
