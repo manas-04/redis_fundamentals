@@ -30,7 +30,7 @@ module.exports.partialSearch = [
           if (err) {
             return res.status(400).json({ errors: errors.array() });
           }
-      
+          function scan() {
           // Parse the SCAN response
           cursor = reply[0];
           const keys = reply[1];
@@ -66,6 +66,8 @@ module.exports.partialSearch = [
               scan();
             }
           }
-        });
+        }
+        scan();
+      });
     }
 ]
