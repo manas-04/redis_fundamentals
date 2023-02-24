@@ -71,3 +71,64 @@ module.exports.partialSearch = [
       });
     }
 ]
+
+module.exports.paginatedSearch = [
+    query('page').notEmpty().withMessage('Page is required'),
+    query('limit').notEmpty().withMessage('Limit is required'),
+    (req,response)=>{
+
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return response.status(400).json({ errors: errors.array() });
+      }
+
+      const page = Number(req.query.page);
+      const limit = Number(req.query.limit);
+      
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+
+      client.zrange('myset', startIndex, endIndex-1, (err, res) => {
+      if (err) return response.status(400).json({ errors: errors.array() });
+      const keyValues = [];
+      for (let i = 0; i < res.length; i++) {
+          client.hget('myhash', res[i], (err, value) => {
+          if (err) return response.status(400).json({ errors: errors.array() });
+          keyValues.push({
+              key: res[i],
+              value: value
+          });
+          if (keyValues.length === res.length) {
+              console.log(keyValues); // logs an array of key-value pairs within the specified range
+              return response.status(200).json({ keyValues });
+          }
+        });
+      }
+      if(res.length==0){
+        return response.status(200).json({ keyValues });
+      }
+    });
+  }
+];
+
+// module.exports.searchingInHash = [
+//   (req,res) => {
+//     const start = 0; // start index of range
+//     const count = 10; // number of items in range
+
+//     const stream = client.hscanStream('myhash', { match: '*', count: count, start: start });
+//     const keyValues = [];
+
+//     stream.on('data', function (result) {
+//       for (let i = 0; i < result.length; i += 2) {
+//         const key = result[i];
+//         const value = result[i + 1];
+//         keyValues.push({ key, value });
+//       }
+//     });
+
+//     stream.on('end', function () {
+//       console.log(keyValues); // logs an array of key-value pairs within the specified range
+//     });
+//   }
+// ]

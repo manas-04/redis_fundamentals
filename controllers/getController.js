@@ -43,3 +43,40 @@ module.exports.getHashValue = [
         });
     }
 ];
+
+module.exports.getAllKeyValuePairs = [
+  query('page').notEmpty().withMessage('Page parameter is required'),
+  query('limit').notEmpty().withMessage('Limit parameter is required'),
+  (req,res) => {
+    const batchSize = 10;
+const cursor = 0;
+const startIndex = 10;
+const endIndex = 19;
+
+// Use SCAN command with MATCH and COUNT options to extract a subset of keys
+client.scan(
+  cursor,
+  'MATCH',
+  '*',
+  'COUNT',
+  batchSize,
+  async function(err, keys) {
+    if (err) throw err;
+
+    // Extract keys 11-20 from the array of keys
+    const pageKeys = keys.slice(startIndex, endIndex + 1);
+
+    // Fetch values for the keys in the page
+    const values = await Promise.all(
+      pageKeys.map((key) => new Promise((resolve, reject) => {
+        client.get(key, (err, value) => {
+          if (err) return reject(err);
+          resolve(JSON.parse(value));
+        });
+      }))
+    );
+
+    // Return the results for keys 11-20
+    res.json(values);
+  });
+}];

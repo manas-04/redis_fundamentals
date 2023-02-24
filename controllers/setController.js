@@ -54,3 +54,14 @@ module.exports.setHashValue = [
         }
     }
 ]
+
+module.exports.addDummyData = (req,response) => {
+    client.hmset('myhash', 'key1', 'value1', 'key2', 'value2', 'key3', 'value3', 'key4', 'value4', 'key5', 'value5', (err, res) => {
+    if (err) throw err;
+
+    client.zadd('myset', 1, 'key1', 2, 'key2', 3, 'key3', 4, 'key4', 5, 'key5', (err, res) => {
+        if (err)  return response.status(400).json({ errors: errors.array() });
+        else  response.send('Redis hash key-value pair set successfully');
+   });
+  });
+}
